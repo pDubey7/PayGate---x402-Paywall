@@ -32,6 +32,7 @@ export default function Home() {
 
       if (res.status === 402) {
         const data = await res.json();
+        const intent = data.intent;
 
         if (!publicKey) {
           setStatus("error");
@@ -39,8 +40,9 @@ export default function Home() {
           return;
         }
 
-        const recipient = new PublicKey(data.x402.recipient);
-        const lamports = data.x402.amount * LAMPORTS_PER_SOL;
+        const recipient = new PublicKey(intent.recipient);
+        const lamports = intent.amount * LAMPORTS_PER_SOL;
+        
 
         setMessage("Payment required. Confirm in wallet…");
 
@@ -52,6 +54,12 @@ export default function Home() {
           })
         );
 
+        if (!publicKey || !sendTransaction) {
+          setStatus("error");
+          setMessage("Wallet not connected.");
+          return;
+        }
+
         const signature = await sendTransaction(tx, connection);
         await connection.confirmTransaction(signature, "confirmed");
 
@@ -59,8 +67,12 @@ export default function Home() {
 
         const paidRes = await fetch("/api/secret", {
           headers: {
-            "x-payment-proof": signature,
-          },
+            "x-payment-proof": JSON.stringify({
+              intentId: intent.id,
+              txSignature: signature,
+            }),
+          }
+          ,
         });
 
         const result = await paidRes.json();

@@ -11,6 +11,13 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import "./globals.css";
 
+// export const metadata = {
+//   title: "PayGate – Pay-Per-Call API Platform | x402",
+//   description:
+//     "PayGate is a pay-per-request API platform using the x402 protocol on Solana.",
+// };
+
+
 export default function RootLayout({
   children,
 }: {
